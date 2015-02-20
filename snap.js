@@ -6,7 +6,7 @@
  * http://opensource.org/licenses/MIT
  *
  * Github:  http://github.com/jakiestfu/Snap.js/
- * Version: 1.9.3
+ * Version: 1.9.3 (with elementMirror for fixed navigation bars)
  */
 /*jslint browser: true*/
 /*global define, module, ender*/
@@ -15,6 +15,7 @@
     var Snap = Snap || function(userOpts) {
         var settings = {
             element: null,
+            elementMirror: null,
             dragger: null,
             disable: 'none',
             addBodyClasses: true,
@@ -93,7 +94,7 @@
             transitionCallback: function(){
                 return (cache.vendor==='Moz' || cache.vendor==='ms') ? 'transitionend' : cache.vendor+'TransitionEnd';
             },
-            canTransform: function(){
+            canTransform: function(){settings.element
                 return typeof settings.element.style[cache.vendor+'Transform'] !== 'undefined';
             },
             deepExtend: function(destination, source) {
@@ -181,6 +182,7 @@
                 },
                 easeCallback: function(){
                     settings.element.style[cache.vendor+'Transition'] = '';
+                    settings.elementMirror.style[cache.vendor+'Transition'] = '';
                     cache.translation = action.translate.get.matrix(4);
                     cache.easing = false;
                     clearInterval(cache.animatingInterval);
@@ -203,6 +205,7 @@
                         cache.easingTo = n;
 
                         settings.element.style[cache.vendor+'Transition'] = 'all ' + settings.transitionSpeed + 's ' + settings.easing;
+                        settings.elementMirror.style[cache.vendor+'Transition'] = 'all ' + settings.transitionSpeed + 's ' + settings.easing;
 
                         cache.animatingInterval = setInterval(function() {
                             utils.dispatchEvent('animating');
@@ -213,6 +216,7 @@
                     }
                     if(n===0){
                            settings.element.style[cache.vendor+'Transform'] = '';
+                           settings.elementMirror.style[cache.vendor+'Transform'] = '';
                        }
                 },
                 x: function(n) {
@@ -236,11 +240,15 @@
                     if( utils.canTransform() ){
                         var theTranslate = 'translate3d(' + n + 'px, 0,0)';
                         settings.element.style[cache.vendor+'Transform'] = theTranslate;
+                        settings.elementMirror.style[cache.vendor+'Transform'] = theTranslate;
                     } else {
                         settings.element.style.width = (win.innerWidth || doc.documentElement.clientWidth)+'px';
+                        settings.elementMirror.style.width = (win.innerWidth || doc.documentElement.clientWidth)+'px';
 
                         settings.element.style.left = n+'px';
+                        settings.elementMirror.style.left = n+'px';
                         settings.element.style.right = '';
+                        settings.elementMirror.style.right = '';
                     }
                 }
             },
@@ -282,6 +290,7 @@
                     
                     utils.dispatchEvent('start');
                     settings.element.style[cache.vendor+'Transition'] = '';
+                    settings.elementMirror.style[cache.vendor+'Transition'] = '';
                     cache.isDragging = true;
                     cache.hasIntent = null;
                     cache.intentChecked = false;
