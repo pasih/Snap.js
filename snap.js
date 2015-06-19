@@ -15,7 +15,8 @@
     var Snap = Snap || function(userOpts) {
         var settings = {
             element: null,
-            elementMirror: null,
+           // elementMirror: null,
+            mirroredElements: [],
             dragger: null,
             disable: 'none',
             addBodyClasses: true,
@@ -182,7 +183,12 @@
                 },
                 easeCallback: function(){
                     settings.element.style[cache.vendor+'Transition'] = '';
-                    settings.elementMirror.style[cache.vendor+'Transition'] = '';
+                    // settings.elementMirror.style[cache.vendor+'Transition'] = '';
+                    for (var i = 0; i < settings.mirroredElements.length; ++i) {
+                        settings.mirroredElements[i].style[cache.vendor+'Transition'] = '';
+                        console.log("Styling transformation for element: ");
+                        console.log(settings.mirroredElements[i]);
+                    }
                     cache.translation = action.translate.get.matrix(4);
                     cache.easing = false;
                     clearInterval(cache.animatingInterval);
@@ -205,7 +211,10 @@
                         cache.easingTo = n;
 
                         settings.element.style[cache.vendor+'Transition'] = 'all ' + settings.transitionSpeed + 's ' + settings.easing;
-                        settings.elementMirror.style[cache.vendor+'Transition'] = 'all ' + settings.transitionSpeed + 's ' + settings.easing;
+                        // settings.elementMirror.style[cache.vendor+'Transition'] = 'all ' + settings.transitionSpeed + 's ' + settings.easing;
+                        for (var i = 0; i < settings.mirroredElements.length; ++i) {
+                            settings.mirroredElements[i].style[cache.vendor+'Transition'] = 'all ' + settings.transitionSpeed + 's ' + settings.easing;
+                        }
 
                         cache.animatingInterval = setInterval(function() {
                             utils.dispatchEvent('animating');
@@ -216,8 +225,10 @@
                     }
                     if(n===0){
                            settings.element.style[cache.vendor+'Transform'] = '';
-                           settings.elementMirror.style[cache.vendor+'Transform'] = '';
-                       }
+                           // settings.elementMirror.style[cache.vendor+'Transform'] = '';
+                           for (var i = 0; i < settings.mirroredElements.length; ++i)
+                                settings.mirroredElements[i].style[cache.vendor+'Transform'] = '';
+                    }
                 },
                 x: function(n) {
                     if( (settings.disable==='left' && n>0) ||
@@ -240,15 +251,23 @@
                     if( utils.canTransform() ){
                         var theTranslate = 'translate3d(' + n + 'px, 0,0)';
                         settings.element.style[cache.vendor+'Transform'] = theTranslate;
-                        settings.elementMirror.style[cache.vendor+'Transform'] = theTranslate;
+                        // settings.elementMirror.style[cache.vendor+'Transform'] = theTranslate;
+                        for (var i = 0; i < settings.mirroredElements.length; ++i)
+                            settings.mirroredElements[i].style[cache.vendor+'Transform'] = theTranslate;
                     } else {
                         settings.element.style.width = (win.innerWidth || doc.documentElement.clientWidth)+'px';
-                        settings.elementMirror.style.width = (win.innerWidth || doc.documentElement.clientWidth)+'px';
+                        // settings.elementMirror.style.width = (win.innerWidth || doc.documentElement.clientWidth)+'px';
+                        for (var i = 0; i < settings.mirroredElements.length; ++i)
+                            settings.mirroredElements[i].style.width = (win.innerWidth || doc.documentElement.clientWidth)+'px';
 
                         settings.element.style.left = n+'px';
-                        settings.elementMirror.style.left = n+'px';
+                        // settings.elementMirror.style.left = n+'px';
                         settings.element.style.right = '';
-                        settings.elementMirror.style.right = '';
+                        // settings.elementMirror.style.right = '';
+                        for (var i = 0; i < settings.mirroredElements.length; ++i) {
+                            settings.mirroredElements[i].style.left = n+'px';
+                            settings.mirroredElements[i].style.right = '';
+                        }
                     }
                 }
             },
@@ -290,7 +309,9 @@
                     
                     utils.dispatchEvent('start');
                     settings.element.style[cache.vendor+'Transition'] = '';
-                    settings.elementMirror.style[cache.vendor+'Transition'] = '';
+                    // settings.elementMirror.style[cache.vendor+'Transition'] = '';
+                    for (var i = 0; i < settings.mirroredElements.length; ++i)
+                        settings.mirroredElements[i].style[cache.vendor+'Transition'] = '';
                     cache.isDragging = true;
                     cache.hasIntent = null;
                     cache.intentChecked = false;
